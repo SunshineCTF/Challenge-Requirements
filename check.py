@@ -1,7 +1,6 @@
 import glob
 import os
-
-from click import option
+import sys
 
 
 class Checker:
@@ -77,6 +76,7 @@ def main():
         chkr = Checker(rules, challenge)
         chal_res.append(chkr.evaluate())
 
+    failures = False
     for res in chal_res:
         print(f"Results for challenge {res['challenge']}")
         for rule in res["rule_results"]:
@@ -84,6 +84,10 @@ def main():
                 print(f" ✅ {rule['rule']['name']}")
             else:
                 print(f" ❌ {rule['rule']['name']}: {rule['rule']['description']}")
+                failures = True
+
+    if failures:
+        sys.exit(1)
 
 
 if __name__ == "__main__":
