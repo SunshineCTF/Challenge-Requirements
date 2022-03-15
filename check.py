@@ -34,7 +34,7 @@ class Checker:
         Returns:
         {
             "rule": _see rule in main_,
-            "result": True if the rule passed, False otherwise
+            "result": True if the rule passed, False if failed
         }
         """
         filename = rule.get("file", None)
@@ -42,13 +42,17 @@ class Checker:
             # Going to assume if no file is returned then this rule is fine.
             return {"rule": rule, "result": True}
 
+        # Optional check used to be here, however I abstracted it to the
+        #  print because I felt it better to use there. Feel free to open
+        # PR to move it wherever you want.
+        # optional = rule.get("optional", False)
+
         # Determine if file exists
-        optional = rule.get("optional", False)
         exists = os.path.exists(f"{self.path}/{filename}")
-        if not optional and not exists:
+        if not exists:
             return {"rule": rule, "result": False}
 
-        # todo: See if there's a good markdown parser and put it here
+        # todo: See if there's a good markdown linter and put it here
 
         return {"rule": rule, "result": True}
 
@@ -75,11 +79,13 @@ def main():
         },
         {
             "name": "Challenge must have a README.md",
+            "file": "README.md",
             "description": "Contains detailed information about how to build and deploy the challenge",
             "markdown": True,
         },
         {
-            "name": "Challenge must have a solve.sh script",
+            "name": "Challenge can optionally have a solve.sh script",
+            "file": "solve.sh",
             "description": "Contains a script that can validate that the challenge works as intended",
             "optional": True,
         },
@@ -98,6 +104,8 @@ def main():
         for rule in res["rule_results"]:
             if rule["result"]:
                 print(f" ✅ {rule['rule']['name']}")
+            elif rule["result"] == False and rule["rule"].get("optional", False):
+                print(f" 💬 {rule['rule']['name']} | Optional, consider adding")
             else:
                 print(f" ❌ {rule['rule']['name']}: {rule['rule']['description']}")
                 failures = True
