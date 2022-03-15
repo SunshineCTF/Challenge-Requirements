@@ -34,7 +34,7 @@ class Checker:
         Returns:
         {
             "rule": _see rule in main_,
-            "result": True if the rule passed, False otherwise
+            "result": True if the rule passed, False if failed, None if optional and failed
         }
         """
         filename = rule.get("file", None)
@@ -47,6 +47,9 @@ class Checker:
         exists = os.path.exists(f"{self.path}/{filename}")
         if not optional and not exists:
             return {"rule": rule, "result": False}
+
+        if optional and not exists:
+            return {"rule": rule, "result": None}
 
         # todo: See if there's a good markdown parser and put it here
 
@@ -79,7 +82,7 @@ def main():
             "markdown": True,
         },
         {
-            "name": "Challenge must have a solve.sh script",
+            "name": "Challenge can optionally have a solve.sh script",
             "description": "Contains a script that can validate that the challenge works as intended",
             "optional": True,
         },
@@ -96,7 +99,9 @@ def main():
     for res in chal_res:
         print(f"Results for challenge {res['challenge']}")
         for rule in res["rule_results"]:
-            if rule["result"]:
+            if rule["result"] == None:
+                print(f" 💬 {rule['rule']['name']} | Optional, consider adding")
+            elif rule["result"]:
                 print(f" ✅ {rule['rule']['name']}")
             else:
                 print(f" ❌ {rule['rule']['name']}: {rule['rule']['description']}")
