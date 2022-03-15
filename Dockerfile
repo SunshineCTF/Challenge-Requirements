@@ -4,6 +4,7 @@ RUN useradd --create-home appuser
 WORKDIR /home/appuser
 USER appuser
 
-COPY check.py .
+COPY check.py /check.py
+COPY entrypoint.sh /entrypoint.sh
 
-ENTRYPOINT ["python3", "check.py"]
+ENTRYPOINT ["/entrypoint.sh"]
