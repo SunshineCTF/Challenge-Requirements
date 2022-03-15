@@ -79,11 +79,13 @@ def main():
         },
         {
             "name": "Challenge must have a README.md",
+            "file": "README.md",
             "description": "Contains detailed information about how to build and deploy the challenge",
             "markdown": True,
         },
         {
             "name": "Challenge can optionally have a solve.sh script",
+            "file": "solve.sh",
             "description": "Contains a script that can validate that the challenge works as intended",
             "optional": True,
         },
