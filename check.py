@@ -9,6 +9,19 @@ class Checker:
         self.path = path
 
     def evaluate(self):
+        """Evaluates a set of rules as defined at initialization
+
+        Returns:
+        {
+            "challenge": "path to the challenge",
+            "rule_results": [
+                {
+                    "rule": _see rule in main_,
+                    "result": True if rule passed, False otherwise
+                }
+            ]
+        }
+        """
         res = {"challenge": self.path, "rule_results": []}
         for rule in self.rules:
             res["rule_results"].append(self.__evaluate_rule__(rule))
@@ -19,7 +32,10 @@ class Checker:
         Evaluates a rule against the challenge
 
         Returns:
-          bool: True if the rule passes, False otherwise
+        {
+            "rule": _see rule in main_,
+            "result": True if the rule passed, False otherwise
+        }
         """
         filename = rule.get("file", None)
         if not filename:
