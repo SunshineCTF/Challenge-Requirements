@@ -3,4 +3,4 @@ date
 ls -la
 pwd
 
-python3 check.py
+python3 /check.py
