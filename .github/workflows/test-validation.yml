@@ -1,4 +1,4 @@
-name: Test Validation Logic
+name: Test Challenge Validator
 
 on:
   workflow_dispatch:
@@ -8,7 +8,7 @@ on:
     branches: [ main ]
 
 jobs:
-  pytest:
+  test:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -18,16 +18,22 @@ jobs:
       with:
         python-version: '3.x'
     
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install pytest
+    - name: Install pytest
+      run: pip install pytest
     
-    - name: Run pytest
+    - name: Run tests
       run: pytest test_check.py -v
     
-    - name: Test CLI directly (monorepo)
-      run: python3 check.py --path test --monorepo
+    - name: Test monorepo mode
+      uses: ./
+      with:
+        monorepo: 'true'
     
-    - name: Test CLI directly (single challenge)
-      run: python3 check.py --path test/web/flag-vault-1 --single-challenge
+    - name: Test single challenge mode
+      run: |
+        cp -r test/web/flag-vault-1/* .
+        
+    - name: Test single challenge mode action
+      uses: ./
+      with:
+        monorepo: 'false'
