@@ -4,6 +4,12 @@ name: "SunshineCTF Challenge Validator"
 
 description: "Validator for SunshineCTF challenges to ensure all administrative requirements of a challenge are met"
 
+inputs:
+  monorepo:
+    description: "Set to 'true' if this is a monorepo with challenges in subdirectories, 'false' if there's a single challenge in the root"
+    required: false
+    default: 'true'
+
 branding:
   icon: "check-circle"
   color: "yellow"

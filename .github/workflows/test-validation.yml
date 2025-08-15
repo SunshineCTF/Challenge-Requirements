@@ -1,0 +1,46 @@
+name: Test Challenge Validator
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main, issue/7/single-challenge-repo ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+    
+    - name: Install pytest
+      run: pip install pytest
+    
+    - name: Run tests
+      run: pytest test_check.py -v
+    
+    - name: Test monorepo mode with test directory
+      run: |
+        # Copy action files to test directory
+        cp action.yml Dockerfile entrypoint.sh check.py test/
+        cd test
+      
+    - name: Test monorepo mode action
+      uses: ./test
+      with:
+        monorepo: 'true'
+    
+    - name: Setup single challenge test
+      run: |
+        # Copy action files and single challenge to root
+        cp action.yml Dockerfile entrypoint.sh check.py test/web/flag-vault-1/* .
+        
+    - name: Test single challenge mode action  
+      uses: ./
+      with:
+        monorepo: 'false'
