@@ -91,7 +91,20 @@ def main():
         },
     ]
 
-    challenges = glob.glob("./*/*")
+    # First, check subdirectories for challenges
+    potential_challenges = glob.glob("./*/*")
+    challenges = []
+    
+    # Filter to only include directories that actually contain challenge files
+    for potential_challenge in potential_challenges:
+        if any(os.path.exists(f"{potential_challenge}/{rule['file']}") for rule in rules):
+            challenges.append(potential_challenge)
+    
+    # If no subdirectory challenges found, check if root directory has challenge files
+    if not challenges:
+        if any(os.path.exists(rule["file"]) for rule in rules):
+            challenges = ["."]
+    
     chal_res = []
 
     for challenge in challenges:
