@@ -24,16 +24,23 @@ jobs:
     - name: Run tests
       run: pytest test_check.py -v
     
-    - name: Test monorepo mode
-      uses: ./
+    - name: Test monorepo mode with test directory
+      run: |
+        # Copy action files to test directory
+        cp action.yml Dockerfile entrypoint.sh check.py test/
+        cd test
+      
+    - name: Test monorepo mode action
+      uses: ./test
       with:
         monorepo: 'true'
     
-    - name: Test single challenge mode
+    - name: Setup single challenge test
       run: |
-        cp -r test/web/flag-vault-1/* .
+        # Copy action files and single challenge to root
+        cp action.yml Dockerfile entrypoint.sh check.py test/web/flag-vault-1/* .
         
-    - name: Test single challenge mode action
+    - name: Test single challenge mode action  
       uses: ./
       with:
         monorepo: 'false'

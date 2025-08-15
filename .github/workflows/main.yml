@@ -18,6 +18,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
-      - name: Validates Challenges
-        uses: ./
+        uses: actions/checkout@v4
+      
+      - name: Setup test directory for validation
+        run: |
+          # Copy action files to test directory
+          cp action.yml Dockerfile entrypoint.sh check.py test/
+      
+      - name: Validate challenges in test directory
+        uses: ./test
+        with:
+          monorepo: 'true'

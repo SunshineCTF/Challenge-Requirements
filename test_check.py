@@ -18,8 +18,8 @@ class TestChecker:
             sys.executable, "check.py", "--path", "test", "--monorepo"
         ], capture_output=True, text=True)
         
-        assert "crypto/MrRobot" in result.stdout
-        assert "web/flag-vault-1" in result.stdout
+        assert "test/crypto/MrRobot" in result.stdout
+        assert "test/web/flag-vault-1" in result.stdout
 
     def test_single_challenge_mode(self):
         """Test single challenge mode"""
