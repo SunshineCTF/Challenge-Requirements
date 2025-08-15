@@ -1,3 +1,4 @@
+import argparse
 import glob
 import os
 import sys
@@ -57,7 +58,25 @@ class Checker:
         return {"rule": rule, "result": True}
 
 
+def get_scan_path(path=None):
+    """Returns the root path to scan for challenges"""
+    return path if path else "."
+
+
 def main():
+    parser = argparse.ArgumentParser(description="SunshineCTF Requirements Checker")
+    parser.add_argument("--path", "-p", default=".", 
+                       help="Root path to scan for challenges (default: current directory)")
+    parser.add_argument("--monorepo", action="store_true", default=True,
+                       help="Scan for challenges in subdirectories (default: True)")
+    parser.add_argument("--single-challenge", action="store_true",
+                       help="Treat the root directory as a single challenge (overrides --monorepo)")
+    args = parser.parse_args()
+    
+    # Handle single-challenge flag overriding monorepo
+    if args.single_challenge:
+        args.monorepo = False
+    
     message = """
     SUNSHINECTF Requirements Checker
     --------------------------------
@@ -91,20 +110,29 @@ def main():
         },
     ]
 
-    # First, check subdirectories for challenges
-    potential_challenges = glob.glob("./*/*")
+    # Determine challenges based on mode
+    scan_path = get_scan_path(args.path)
     challenges = []
-    
-    # Filter to only include directories that actually contain challenge files
-    for potential_challenge in potential_challenges:
-        if any(os.path.exists(f"{potential_challenge}/{rule['file']}") for rule in rules):
-            challenges.append(potential_challenge)
-    
-    # If no subdirectory challenges found, check if root directory has challenge files
-    if not challenges:
-        if any(os.path.exists(rule["file"]) for rule in rules):
-            challenges = ["."]
-    
+
+    if args.monorepo:
+        # Monorepo mode: look for challenges in subdirectories
+        potential_challenges = glob.glob(f"{scan_path}/*/*")
+        
+        # Filter to only include directories that actually contain challenge files
+        for potential_challenge in potential_challenges:
+            if any(
+                os.path.exists(f"{potential_challenge}/{rule['file']}") for rule in rules
+            ):
+                challenges.append(potential_challenge)
+
+        # If no subdirectory challenges found, check if root directory has challenge files
+        if not challenges:
+            if any(os.path.exists(f"{scan_path}/{rule['file']}") for rule in rules):
+                challenges = [scan_path]
+    else:
+        # Single challenge mode: treat the root directory as the challenge
+        challenges = [scan_path]
+
     chal_res = []
 
     for challenge in challenges:
@@ -117,7 +145,7 @@ def main():
         for rule in res["rule_results"]:
             if rule["result"]:
                 print(f" ✅ {rule['rule']['name']}")
-            elif rule["result"] == False and rule["rule"].get("optional", False):
+            elif not rule["result"] and rule["rule"].get("optional", False):
                 print(f" 💬 {rule['rule']['name']} | Optional, consider adding")
             else:
                 print(f" ❌ {rule['rule']['name']}: {rule['rule']['description']}")

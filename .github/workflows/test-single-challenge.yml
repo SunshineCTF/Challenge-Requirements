@@ -1,0 +1,41 @@
+name: Test Single Challenge Mode
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main, issue/7/single-challenge-repo ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-single-challenge-crypto:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    # Copy a single challenge to root for testing
+    - name: Setup single challenge test (crypto)
+      run: |
+        cp -r test/crypto/MrRobot/* .
+        ls -la
+    
+    - name: Test Single Challenge Mode (crypto)
+      uses: ./
+      with:
+        monorepo: 'false'
+
+  test-single-challenge-web:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    # Copy a single challenge to root for testing
+    - name: Setup single challenge test (web)
+      run: |
+        cp -r test/web/flag-vault-1/* .
+        ls -la
+    
+    - name: Test Single Challenge Mode (web)
+      uses: ./
+      with:
+        monorepo: 'false'

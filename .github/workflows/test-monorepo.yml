@@ -1,0 +1,19 @@
+name: Test Monorepo Mode
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main, issue/7/single-challenge-repo ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-monorepo:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Test Monorepo Mode (Default)
+      uses: ./
+      with:
+        monorepo: 'true'
