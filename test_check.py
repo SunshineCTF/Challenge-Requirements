@@ -13,13 +13,13 @@ class TestChecker:
         assert get_scan_path("test") == "test"
 
     def test_monorepo_mode(self):
-        """Test monorepo mode finds multiple challenges"""
+        """Test monorepo mode finds multiple challenges with test/ as root"""
         result = subprocess.run([
             sys.executable, "check.py", "--path", "test", "--monorepo"
         ], capture_output=True, text=True)
         
-        assert "test/crypto/MrRobot" in result.stdout
-        assert "test/web/flag-vault-1" in result.stdout
+        assert "crypto/MrRobot" in result.stdout
+        assert "web/flag-vault-1" in result.stdout
 
     def test_single_challenge_mode(self):
         """Test single challenge mode"""
