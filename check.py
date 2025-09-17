@@ -91,7 +91,7 @@ def main():
         },
     ]
 
-    challenges = glob.glob("./*/*")
+    challenges = [path for path in glob.glob("./*/*") if os.path.isdir(path)]
     chal_res = []
 
     for challenge in challenges:
